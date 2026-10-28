@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medical Interaction & Safety App</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #10b981;
+            --primary-dark: #059669;
+            --primary-light: #d1fae5;
+            --secondary: #06b6d4;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #0f172a;
+            --text-sub: #64748b;
+            --border: #e2e8f0;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --success: #10b981;
+            --radius-lg: 20px;
+            --radius-md: 12px;
+            --shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: #0d131a;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: var(--text-main);
+        }
+
+        .mobile-container {
+            width: 100%;
+            max-width: 420px;
+            height: 100vh;
+            max-height: 880px;
+            background-color: var(--bg);
+            border-radius: 36px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+            border: 8px solid #1e293b;
+        }
+
+        .app-header {
+            padding: 20px 24px 12px;
+            background: var(--card-bg);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .user-greeting {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .avatar {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: var(--primary-light);
+            color: var(--primary-dark);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        .mode-badge {
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 20px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .badge-patient {
+            background: #e0f2fe;
+            color: #0284c7;
+        }
+
+        .badge-doctor {
+            background: var(--primary-light);
+            color: var(--primary-dark);
+        }
+
+        .app-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            scroll-behavior: smooth;
+        }
+
+        .screen {
+            display: none;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .role-card {
+            background: var(--card-bg);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            margin-bottom: 16px;
+            border: 2px solid transparent;
+            box-shadow: var(--shadow);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .role-card:hover, .role-card.selected {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+.role-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 16px;
+            background: var(--primary-light);
+            color: var(--primary-dark);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            margin-bottom: 16px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+        }
+
+        .search-box {
+            position: relative;
+            margin-bottom: 16px;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 14px 16px 14px 48px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border);
+            font-size: 0.95rem;
+            outline: none;
+            transition: border 0.2s;
+        }
+
+        .search-box input:focus {
+            border-color: var(--primary);
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-sub);
+        }
+
+        .drug-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: #f1f5f9;
+            padding: 8px 14px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin: 4px;
+            border: 1px solid var(--border);
+        }
+
+        .drug-chip i {
+            cursor: pointer;
+            color: var(--text-sub);
+        }
+
+        .drug-chip i:hover {
+            color: var(--danger);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            border-radius: var(--radius-md);
+            border: none;
+            background: var(--primary);
+            color: white;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: background 0.2s;
+        }
+
+        .btn:hover {
+            background: var(--primary-dark);
+        }
+
+        .nav-bar {
+            background: var(--card-bg);
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: space-around;
+            padding: 12px 0 20px;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            color: var(--text-sub);
+            font-size: 0.75rem;
+            font-weight: 500;
+            cursor: pointer;
+            text-decoration: none;
+            width: 25%;
+        }
+
+        .nav-item.active {
+            color: var(--primary);
+        }
+
+        .nav-item i {
+            font-size: 1.2rem;
+        }
+
+        .interaction-alert {
+            padding: 16px;
+            border-radius: var(--radius-md);
+            margin-top: 12px;
+            border-left: 4px solid;
+        }
+
+        .alert-high {
+            background: #fef2f2;
+            border-color: var(--danger);
+            color: #991b1b;
+        }
+
+        .alert-medium {
+            background: #fffbeb;
+            border-color: var(--warning);
+            color: #92400e;
+        }
+
+        .alert-safe {
+            background: #f0fdf4;
+            border-color: var(--success);
+            color: #166534;
+        }
+    </style>
+</head>
+<body>
+
+<div class="mobile-container">
+    <div class="app-header">
+        <div class="user-greeting">
+            <div class="avatar" id="user-avatar">P</div>
+            <div>
+<h4 style="font-size: 0.95rem;" id="user-title">Patient Portal</h4>
+                <p style="font-size: 0.75rem; color: var(--text-sub);" id="user-sub">Active Medication Safety</p>
+            </div>
+        </div>
+        <span class="mode-badge badge-patient" id="mode-badge">Patient</span>
+    </div>
+
+    <div class="app-content">
+        <!-- Screen 0: Role Selection -->
+        <div id="screen-roles" class="screen active">
+            <h2 style="margin-bottom: 8px;">Select Experience Mode</h2>
+            <p style="color: var(--text-sub); font-size: 0.9rem; margin-bottom: 24px;">Tailored medical details and user interface</p>
+
+            <div class="role-card" onclick="selectRole('patient')">
+                <div class="role-icon"><i class="fa-solid fa-user-heart"></i></div>
+                <div>
+                    <h3 style="font-size: 1.05rem;">Patient Mode</h3>
+                    <p style="color: var(--text-sub); font-size: 0.8rem; margin-top: 2px;">Simplified clear explanations, warnings, side effects & tracking.</p>
+                </div>
+            </div>
+
+            <div class="role-card" onclick="selectRole('doctor')">
+                <div class="role-icon" style="background: #e0f2fe; color: #0284c7;"><i class="fa-solid fa-user-md"></i></div>
+                <div>
+                    <h3 style="font-size: 1.05rem;">Doctor Mode</h3>
+                    <p style="color: var(--text-sub); font-size: 0.8rem; margin-top: 2px;">Pharmacological mechanism analysis, severity scale & clinical sources.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Screen 1: Dashboard -->
+        <div id="screen-home" class="screen">
+            <div class="card" style="background: linear-gradient(135deg, #10b981, #059669); color: white;">
+                <h3 style="font-size: 1.1rem; font-weight: 600;">Interaction Checker</h3>
+                <p style="font-size: 0.85rem; opacity: 0.9; margin-top: 4px;">Select medications to analyze safety and adverse events.</p>
+            </div>
+
+            <div class="card">
+                <h4 style="margin-bottom: 12px; font-size: 0.9rem;">Select Medications:</h4>
+                <div class="search-box">
+                    <i class="fa-solid fa-search"></i>
+                    <input type="text" id="drug-input" placeholder="Type drug name (e.g. Warfarin, Aspirin)..." oninput="showSuggestions(this.value)">
+                </div>
+                <div id="suggestions" style="max-height: 150px; overflow-y: auto; margin-bottom: 12px;"></div>
+
+                <div id="selected-drugs" style="margin-bottom: 16px;"></div>
+
+                <button class="btn" onclick="checkInteractions()"><i class="fa-solid fa-shield-halved"></i> Analyze Interactions</button>
+            </div>
+
+            <div id="results-container"></div>
+        </div>
+
+        <!-- Screen 2: Database Explorer -->
+        <div id="screen-drugs" class="screen">
+            <h3 style="margin-bottom: 12px;">Medication Index (138)</h3>
+            <div class="search-box">
+                <i class="fa-solid fa-search"></i>
+                <input type="text" placeholder="Search index..." oninput="renderDrugList(this.value)">
+            </div>
+            <div id="drug-list-container"></div>
+        </div>
+    </div>
+
+    <div class="nav-bar">
+        <div class="nav-item active" onclick="switchNav('home', this)">
+            <i class="fa-solid fa-house"></i>
+            <span>Checker</span>
+        </div>
+        <div class="nav-item" onclick="switchNav('drugs', this)">
+            <i class="fa-solid fa-pills"></i>
+            <span>Drugs</span>
+        </div>
+        <div class="nav-item" onclick="switchNav('roles', this)">
+            <i class="fa-solid fa-sliders"></i>
+            <span>Switch Mode</span>
+        </div>
+    </div>
+</div>
+
+<script>
+    let currentRole = 'patient';
+    let selectedDrugs = [];
+// Core Dataset Preview Sample
+    const dbDrugs = [
+        { id: "warfarin", name: "Warfarin", group: "anticoagulant", side_effects: "minor bleeding, easy bruising, stomach discomfort" },
+        { id: "aspirin", name: "Aspirin", group: "antiplatelet", side_effects: "upset stomach, heartburn, easy bruising" },
+        { id: "ibuprofen", name: "Ibuprofen", group: "NSAID", side_effects: "stomach pain, nausea, dizziness" },
+        { id: "apixaban", name: "Apixaban", group: "anticoagulant", side_effects: "bruising, minor nosebleeds, nausea" },
+        { id: "metformin", name: "Metformin", group: "antidiabetic", side_effects: "nausea, diarrhea, abdominal discomfort" }
+    ];
+
+    const dbInteractions = [
+        { drug_a: "warfarin", drug_b: "aspirin", severity: "high", mechanism: "Additive suppression of primary and secondary hemostasis.", patient_explanation: "Together they strongly raise the risk of serious stomach bleeding and internal hemorrhage." },
+        { drug_a: "warfarin", drug_b: "ibuprofen", severity: "high", mechanism: "NSAID COX-1 inhibition impairs platelet function.", patient_explanation: "Combining these significantly increases your risk of severe stomach ulcers and bleeding." }
+    ];
+
+    function selectRole(role) {
+        currentRole = role;
+        const badge = document.getElementById('mode-badge');
+        const avatar = document.getElementById('user-avatar');
+        const title = document.getElementById('user-title');
+        const sub = document.getElementById('user-sub');
+
+        if (role === 'doctor') {
+            badge.className = "mode-badge badge-doctor";
+            badge.innerText = "Doctor";
+            avatar.innerText = "D";
+            avatar.style.background = "#e0f2fe";
+            avatar.style.color = "#0284c7";
+            title.innerText = "Doctor Portal";
+            sub.innerText = "Clinical Pharmacology & Mechanisms";
+        } else {
+            badge.className = "mode-badge badge-patient";
+            badge.innerText = "Patient";
+            avatar.innerText = "P";
+            avatar.style.background = "#d1fae5";
+            avatar.style.color = "#059669";
+            title.innerText = "Patient Portal";
+            sub.innerText = "Active Medication Safety";
+        }
+        switchScreen('screen-home');
+    }
+
+    function switchNav(screenTarget, el) {
+        document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+        if (el) el.classList.add('active');
+        switchScreen('screen-' + screenTarget);
+    }
+
+    function switchScreen(id) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        if (id === 'screen-drugs') renderDrugList('');
+    }
+
+    function showSuggestions(val) {
+        const res = document.getElementById('suggestions');
+        if (!val.trim()) { res.innerHTML = ''; return; }
+        const matches = dbDrugs.filter(d => d.name.toLowerCase().includes(val.toLowerCase()) && !selectedDrugs.includes(d.id));
+        res.innerHTML = matches.map(m => 
+            <div style="padding: 8px 12px; background: white; border-bottom: 1px solid #f1f5f9; cursor: pointer;" onclick="addDrug('${m.id}', '${m.name}')">
+                <strong>${m.name}</strong> <span style="font-size: 0.75rem; color: #64748b;">(${m.group})</span>
+            </div>
+        ).join('');
+    }
+
+    function addDrug(id, name) {
+        if (!selectedDrugs.includes(id)) selectedDrugs.push(id);
+        document.getElementById('drug-input').value = '';
+        document.getElementById('suggestions').innerHTML = '';
+        renderChips();
+    }
+
+    function removeDrug(id) {
+        selectedDrugs = selectedDrugs.filter(d => d !== id);
+        renderChips();
+    }
+function renderChips() {
+        const container = document.getElementById('selected-drugs');
+        container.innerHTML = selectedDrugs.map(id => {
+            const d = dbDrugs.find(item => item.id === id);
+            return <span class="drug-chip">${d ? d.name : id} <i class="fa-solid fa-xmark" onclick="removeDrug('${id}')"></i></span>;
+        }).join('');
+    }
+
+    function checkInteractions() {
+        const results = document.getElementById('results-container');
+        if (selectedDrugs.length < 2) {
+            results.innerHTML = <p style="text-align: center; color: var(--text-sub); font-size: 0.85rem; margin-top: 12px;">Please add at least 2 medications to check for interaction risks.</p>;
+            return;
+        }
+
+        let matches = [];
+        for (let i = 0; i < selectedDrugs.length; i++) {
+            for (let j = i + 1; j < selectedDrugs.length; j++) {
+                const a = selectedDrugs[i], b = selectedDrugs[j];
+                const match = dbInteractions.find(it => (it.drug_a === a && it.drug_b === b) || (it.drug_a === b && it.drug_b === a));
+                if (match) matches.push(match);
+            }
+        }
+
+        if (matches.length === 0) {
+            results.innerHTML = 
+                <div class="interaction-alert alert-safe">
+                    <h4 style="font-size: 0.95rem;"><i class="fa-solid fa-circle-check"></i> No Interactions Found</h4>
+                    <p style="font-size: 0.8rem; margin-top: 4px;">Selected medications have no documented major interaction pairs in current index.</p>
+                </div>
+            ;
+            return;
+        }
+
+        results.innerHTML = matches.map(m => 
+            <div class="interaction-alert ${m.severity === 'high' ? 'alert-high' : 'alert-medium'}">
+                <h4 style="font-size: 0.95rem; text-transform: capitalize;"><i class="fa-solid fa-triangle-exclamation"></i> Risk: ${m.severity} Severity</h4>
+                <p style="font-size: 0.85rem; font-weight: 600; margin-top: 6px;">${m.drug_a.toUpperCase()} + ${m.drug_b.toUpperCase()}</p>
+                <p style="font-size: 0.8rem; margin-top: 6px; line-height: 1.4;">
+                    ${currentRole === 'doctor' ? '<b>Pharmacological Mechanism:</b> ' + m.mechanism : '<b>Safety Warning:</b> ' + m.patient_explanation}
+                </p>
+            </div>
+        ).join('');
+    }
+
+    function renderDrugList(filter) {
+        const container = document.getElementById('drug-list-container');
+        const list = dbDrugs.filter(d => d.name.toLowerCase().includes(filter.toLowerCase()));
+        container.innerHTML = list.map(d => 
+            <div class="card" style="padding: 14px; margin-bottom: 10px;">
+                <h4 style="font-size: 0.95rem; color: var(--text-main);">${d.name}</h4>
+                <p style="font-size: 0.75rem; color: var(--primary-dark); font-weight: 500; margin-top: 2px;">Class: ${d.group}</p>
+                <p style="font-size: 0.78rem; color: var(--text-sub); margin-top: 6px;">Side effects: ${d.side_effects}</p>
+            </div>
+        ).join('');
+    }
+</script>
+
+</body>
+</html>
